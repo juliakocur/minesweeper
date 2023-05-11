@@ -5,6 +5,10 @@ const container = document.createElement('div');
 container.classList.add('container');
 body.appendChild(container);
 
+const minesweeper = document.createElement('h1');
+container.appendChild(minesweeper);
+minesweeper.innerText = 'MINESWEEPER';
+
 const panel = document.createElement('div');
 panel.classList.add('panel');
 container.appendChild(panel);
@@ -13,9 +17,107 @@ const field = document.createElement('div');
 field.classList.add('field');
 container.appendChild(field);
 
+const movies = document.createElement('button');
+movies.classList.add('movies');
+panel.appendChild(movies);
+movies.innerText = 0;
+
+const time = document.createElement('div');
+time.classList.add('time');
+panel.appendChild(time);
+
+const minutes = document.createElement('span');
+minutes.classList.add('minutes');
+time.appendChild(minutes);
+minutes.innerText = '00';
+
+const colon = document.createElement('span');
+colon.classList.add('colon');
+time.appendChild(colon);
+colon.innerText = ':'
+
+const seconds = document.createElement('span');
+seconds.classList.add('seconds');
+time.appendChild(seconds);
+seconds.innerText = '00';
+
+const new_game = document.createElement('button');
+new_game.classList.add('new_game');
+panel.appendChild(new_game);
+new_game.innerText = 'New game';
+
+
+const mine_count_panel = document.createElement('button');
+mine_count_panel.classList.add('mine_count');
+panel.appendChild(mine_count_panel);
+
+
+
+/*-------------------------------------TIME------------------------------------------ */
+let interval;
+let min = 0;
+let sec = 0;
+let ms = 0;
+let s = 0;
+
+let seconds_count;
+
+const startTimer = () => {
+    ms++;
+    s++;
+    if (ms > 99) {
+        sec++;
+        seconds.innerHTML = '0' + sec;
+        ms = 0;
+    }
+    if (sec > 9) {
+        seconds.innerHTML = sec;
+    }
+    if (sec > 59) {
+        min++;
+        minutes.innerHTML = '0' + min;
+
+        sec = 0;
+        seconds.innerHTML = '0' + sec;
+    }
+    if (min > 9) {
+        min.innerHTML = min;
+    }
+}
+
+function createTime() {
+    clearInterval(interval);
+    interval = setInterval(startTimer, 10);
+};
+
+function resetTime() {
+    clearInterval(interval);
+    min = 0;
+    sec = 0;
+    ms = 0;
+
+    minutes.innerHTML = '00';
+    seconds.innerHTML = '00'
+}
+
+function stopTime() {
+    clearInterval(interval);
+}
+
+new_game.addEventListener('click', () => {
+    resetTime();
+    startGame(10, 10, 10);
+    field.style.pointerEvents='auto';
+    movies.innerText = '0';
+})
+
+
+
+
 startGame(10, 10, 10);
 
 function startGame(w, h, bombs_count) {
+    
     const cells_count = w * h; 
     field.innerHTML = '<button class="button"></button>'.repeat(cells_count);
     //все дети-ячейки field
@@ -23,12 +125,22 @@ function startGame(w, h, bombs_count) {
 
     let closed_count = cells_count;
     let click_count = 0;
+    let mine_count = bombs_count;
+
+
+    mine_count_panel.innerText = mine_count;
+
+    function showBombsCount() {
+        mine_count_panel.innerText = mine_count;
+    }
 
     //массив с индексами бомб
     const bombs = [...Array(cells_count).keys()].sort(() => Math.random() - 0.5).slice(0, bombs_count);
     
     field.addEventListener('click', (e) => {
+        createTime();
         click_count++;
+        movies.innerText = click_count;
         //если клик мимо поля
         if (e.target.tagName !== 'BUTTON') {
             return;
@@ -71,15 +183,22 @@ function startGame(w, h, bombs_count) {
     
         const count = getBombsCount(row, column);
         if (isBomb(row, column)) {
+            
             cell.innerHTML = '<img class="img_bomb" src ="assets/bomb.png" alt = "mine"></img>';
             alert('Game over. Try again');
+            mine_count--;
+            showBombsCount();
+            stopTime();
             field.style.pointerEvents='none';
             return;
         } 
 
         closed_count--;
         if(closed_count <= bombs_count) {
-            alert(`Hooray! You found all mines in ## seconds and ${click_count} moves!`);
+            let z = Math.floor(s*0.01);
+            console.log(z);
+            stopTime();
+            alert(`Hooray! You found all mines in ${z} seconds and ${click_count} moves!`);
             field.style.pointerEvents='none';
             return;
         }
