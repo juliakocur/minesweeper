@@ -15,6 +15,7 @@ container.appendChild(panel);
 
 const field = document.createElement('div');
 field.classList.add('field');
+field.classList.add('active');
 container.appendChild(field);
 
 const movies = document.createElement('button');
@@ -47,9 +48,72 @@ panel.appendChild(new_game);
 new_game.innerText = 'New game';
 
 
-const mine_count_panel = document.createElement('button');
-mine_count_panel.classList.add('mine_count');
+const mine_count_panel = document.createElement('input');
+mine_count_panel.type = 'text';
+mine_count_panel.value = 10;
 panel.appendChild(mine_count_panel);
+
+const form = document.createElement('form');
+form.name = 'f1';
+panel.appendChild(form);
+
+const form_cells = document.createElement('select');
+form_cells.name = 'cells';
+form_cells.id = 's1';
+form.appendChild(form_cells);
+
+const option10 = document.createElement('option');
+option10.innerText = 'easy';
+form_cells.appendChild(option10);
+
+const option15 = document.createElement('option');
+option15.innerText = 'medium';
+form_cells.appendChild(option15);
+
+const option25 = document.createElement('option');
+option25.innerText = 'hard';
+form_cells.appendChild(option25);
+
+const input_button = document.createElement('input');
+input_button.type = 'button';
+input_button.innerText = 'ok';
+form_cells.appendChild(input_button);
+
+
+
+
+let d = [10];
+let z = [10];
+form_cells.addEventListener("click", function createField() {
+    let field_count =document.getElementById('s1').value;
+    let field_cells = field_count;
+  
+    if (field_cells === 'medium') {
+      startGame(15, 15, 40);
+      z = 40;
+      d = 15;
+      field.classList.remove('tw_five');
+      field.classList.add('fifteen');
+      mine_count_panel.value = 40;
+    }
+
+    if (field_cells === 'hard') {
+        startGame(25, 25, 99);
+        z = 99;
+        d = 25;
+        field.classList.remove('fifteen');
+        field.classList.add('tw_five');
+        mine_count_panel.value = 99;
+    }
+    if (field_cells === 'easy') {
+        startGame(10, 10, 10);
+        z = 10;
+        d = 10;
+        field.classList.remove('fifteen');
+        field.classList.remove('tw_five');
+        mine_count_panel.value = 10;
+    }
+    })
 
 
 
@@ -104,20 +168,40 @@ function stopTime() {
     clearInterval(interval);
 }
 
+
 new_game.addEventListener('click', () => {
     resetTime();
-    startGame(10, 10, 10);
+    startGame(d, d, changeBombCount());
     field.style.pointerEvents='auto';
     movies.innerText = '0';
 })
 
+/*-----------------------------------START GAME---------------------------------------- */
+
+//загрузить бомбы при смене value
+function changeBombCount() {
+    body.addEventListener('click', function() {
+       
+        if (field.classList.contains('active') && mine_count_panel.value !== 10) {
+            console.log(z);
+            startGame(d, d, mine_count_panel.value);
+        }
+        if (mine_count_panel.value > 99) {
+            mine_count_panel.value = 99;
+        }
+        if (mine_count_panel.value < 10) {
+            mine_count_panel.value = 10;
+        }
+    })
+    return mine_count_panel.value;
+}
+changeBombCount();
 
 
-
-startGame(10, 10, 10);
+startGame(d, d, mine_count_panel.value);
 
 function startGame(w, h, bombs_count) {
-    
+       
     const cells_count = w * h; 
     field.innerHTML = '<button class="button"></button>'.repeat(cells_count);
     //все дети-ячейки field
@@ -128,16 +212,17 @@ function startGame(w, h, bombs_count) {
     let mine_count = bombs_count;
 
 
-    mine_count_panel.innerText = mine_count;
-
+    
     function showBombsCount() {
-        mine_count_panel.innerText = mine_count;
+        mine_count_panel.value= mine_count;
     }
 
     //массив с индексами бомб
     const bombs = [...Array(cells_count).keys()].sort(() => Math.random() - 0.5).slice(0, bombs_count);
-    
+   console.log(bombs);
+
     field.addEventListener('click', (e) => {
+        field.classList.remove('active');
         createTime();
         click_count++;
         movies.innerText = click_count;
@@ -176,7 +261,7 @@ function startGame(w, h, bombs_count) {
   
         const index = row * w + column;
         const cell = cells[index];
-        
+       
         if (cell.disabled === true) return;
         cell.disabled = true;
 
@@ -186,10 +271,10 @@ function startGame(w, h, bombs_count) {
             
             cell.innerHTML = '<img class="img_bomb" src ="assets/bomb.png" alt = "mine"></img>';
             alert('Game over. Try again');
-            mine_count--;
             showBombsCount();
             stopTime();
             field.style.pointerEvents='none';
+           // field.classList.add('active');
             return;
         } 
 
@@ -199,6 +284,7 @@ function startGame(w, h, bombs_count) {
             console.log(z);
             stopTime();
             alert(`Hooray! You found all mines in ${z} seconds and ${click_count} moves!`);
+            field.classList.add('active');
             field.style.pointerEvents='none';
             return;
         }
