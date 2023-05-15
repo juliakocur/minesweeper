@@ -13,6 +13,8 @@ body {
 .field {
     display: grid;
     grid-template-columns: repeat(10, 20px);
+    cursor: pointer;
+    border: 5px;
 }
 
 .fifteen {
@@ -24,18 +26,27 @@ body {
 }
 
 .panel {
-    margin-top: 20px;
+    margin-top: 10px;
     height: 50px;
     width: 60%;
     display: flex;
     align-items: center;
     justify-content:space-around;
+    border: 1px;
+    border: solid rgb(151, 149, 149);
+    border-radius: 5px;
+    margin-bottom: 10px;
 }
 
 .button {
     height: 20px;
     font-size: 24px;
     padding: 0;
+    cursor: pointer;
+}
+
+.button.night {
+    background: rgb(77, 77, 72);
 }
 
 .img_bomb {
@@ -52,6 +63,152 @@ body {
 
 h1 {
     margin: 10px;
+}
+
+.new_game,
+#s1 {
+    cursor: pointer;
+}
+
+
+.night_mode {
+    width: 40px;
+    height: 15px;
+    background-color: rgb(54,54,54);
+  
+    position: absolute;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.night_mode.night {
+    background-color: #cfc8c8;
+}
+
+.toggle_circle {
+    width: 10px;
+    height: 10px;
+
+    background-color: #e6e6e6;
+    border-radius: 50px;
+    margin: 0 5px;
+    left: 0;
+    position: absolute;
+    transition: .2s;
+}
+
+.toggle_circle.night {
+    left: 60%;
+    background-color: rgb(34, 33, 33);
+}
+
+body.night {
+    background-color: rgb(74, 80, 79);
+}
+
+.panel.night {
+    background-color: rgb(74, 80, 79);
+}
+
+.field.night {
+    background-color: rgb(58, 51, 51);
+}
+
+.time.night,
+.time_text.night {
+    color: white;
+}
+
+h1.night {
+    color: white;
+}
+
+input[type="text" i] {
+    width: 16px;
+}
+
+.panel1, 
+.panel2, 
+.panel3, 
+.panel4,
+.panel5  {
+    display: flex;
+    flex-direction: column;
+} 
+
+form, 
+.time_text  {
+    margin-bottom: 3px;
+}
+
+form {
+    margin-bottom: -20px;
+}
+
+.night_mode {
+    margin-top: -20px;
+}
+
+.panel1a,
+.panel1b {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel1a {
+    margin-bottom: 3px;
+}
+
+.movies_text,
+.mines_text {
+    margin-right: 3px;
+}
+
+.movies_text.night,
+.mines_text.night {
+    color: white;
+}
+
+.flag_img {
+    max-width: 21px;
+    margin-bottom: -6px;
+    margin-right: 4px;
+}
+
+.flag_count {
+    width: 24px;
+   padding: 1px 2px;
+}
+
+.flag_img {
+    background-image: url(assets/flag1.png);
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+}
+
+.put {
+    background-image: url(./assets/flag_put1.png);
+
+}
+
+.flag {
+    display: flex;
+}
+
+.img_flag {
+    max-width: 17px;
+    margin-left: -2px;
+    margin-bottom: 7px;
+}
+
+.active {
+    background-image: url(assets/flag1.png);
+    border: 0;
 }
 
 

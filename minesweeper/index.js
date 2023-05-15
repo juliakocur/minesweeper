@@ -1,5 +1,8 @@
+
+
 const body = document.body;
 const button = document.querySelector('.button');
+
 
 const container = document.createElement('div');
 container.classList.add('container');
@@ -13,19 +16,57 @@ const panel = document.createElement('div');
 panel.classList.add('panel');
 container.appendChild(panel);
 
+const panel1 = document.createElement('div');
+panel1.classList.add('panel1');
+panel.appendChild(panel1); 
+
+const panel2 = document.createElement('div');
+panel2.classList.add('panel2');
+panel.appendChild(panel2); 
+
+const panel3 = document.createElement('div');
+panel3.classList.add('panel3');
+panel.appendChild(panel3); 
+
+const panel4 = document.createElement('div');
+panel4.classList.add('panel4');
+panel.appendChild(panel4); 
+
+const panel5 = document.createElement('div');
+panel5.classList.add('panel5');
+panel.appendChild(panel5); 
+
 const field = document.createElement('div');
 field.classList.add('field');
 field.classList.add('active');
 container.appendChild(field);
 
+const panel1a = document.createElement('div');
+panel1a.classList.add('panel1a');
+panel1.appendChild(panel1a);
+
+const panel1b = document.createElement('div');
+panel1b.classList.add('panel1b');
+panel1.appendChild(panel1b);
+
+const movies_text = document.createElement('div');
+movies_text.classList.add('movies_text');
+movies_text.innerText = 'movies: ';
+panel1a.appendChild(movies_text);
+
 const movies = document.createElement('button');
 movies.classList.add('movies');
-panel.appendChild(movies);
+panel1a.appendChild(movies);
 movies.innerText = 0;
+
+const time_text = document.createElement('div');
+time_text.classList.add('time_text');
+time_text.innerText = 'TIME';
+panel2.appendChild(time_text);
 
 const time = document.createElement('div');
 time.classList.add('time');
-panel.appendChild(time);
+panel2.appendChild(time);
 
 const minutes = document.createElement('span');
 minutes.classList.add('minutes');
@@ -44,18 +85,23 @@ seconds.innerText = '00';
 
 const new_game = document.createElement('button');
 new_game.classList.add('new_game');
-panel.appendChild(new_game);
-new_game.innerText = 'New game';
+panel3.appendChild(new_game);
+new_game.innerText = 'New\ngame';
 
+
+const mines_text = document.createElement('div');
+mines_text.classList.add('mines_text');
+mines_text.innerText = 'mines:  ';
+panel1b.appendChild(mines_text);
 
 const mine_count_panel = document.createElement('input');
 mine_count_panel.type = 'text';
 mine_count_panel.value = 10;
-panel.appendChild(mine_count_panel);
+panel1b.appendChild(mine_count_panel);
 
 const form = document.createElement('form');
 form.name = 'f1';
-panel.appendChild(form);
+panel4.appendChild(form);
 
 const form_cells = document.createElement('select');
 form_cells.name = 'cells';
@@ -79,7 +125,43 @@ input_button.type = 'button';
 input_button.innerText = 'ok';
 form_cells.appendChild(input_button);
 
+const night_button = document.createElement('div');
+night_button.classList.add('night_mode');
+panel4.appendChild(night_button);
 
+const toggle = document.createElement('div');
+toggle.classList.add('toggle_circle');
+night_button.appendChild(toggle);
+
+const flag = document.createElement('div');
+flag.classList.add('flag');
+panel5.appendChild(flag);
+
+const flag_img = document.createElement('div');
+flag_img.classList.add('flag_img');
+flag.appendChild(flag_img);
+
+const flag_count = document.createElement('button');
+flag_count.classList.add('flag_count');
+flag.appendChild(flag_count);
+flag_count.innerText = 10;
+
+
+night_button.addEventListener('click', function() {
+    toggle.classList.toggle('night');
+    body.classList.toggle('night');
+    night_button.classList.toggle('night');
+    panel.classList.toggle('night');
+    field.classList.toggle('night');
+    minesweeper.classList.toggle('night');
+    time.classList.toggle('night');
+    time_text.classList.toggle('night');
+    mines_text.classList.toggle('night');
+    movies_text.classList.toggle('night');
+    if (button) {
+    button.classList.toggle('night');
+    }
+})
 
 
 let d = [10];
@@ -90,6 +172,7 @@ form_cells.addEventListener("click", function createField() {
   
     if (field_cells === 'medium') {
       startGame(15, 15, 40);
+      resetTime();
       z = 40;
       d = 15;
       field.classList.remove('tw_five');
@@ -98,6 +181,7 @@ form_cells.addEventListener("click", function createField() {
     }
 
     if (field_cells === 'hard') {
+        resetTime();
         startGame(25, 25, 99);
         z = 99;
         d = 25;
@@ -106,6 +190,7 @@ form_cells.addEventListener("click", function createField() {
         mine_count_panel.value = 99;
     }
     if (field_cells === 'easy') {
+        resetTime();
         startGame(10, 10, 10);
         z = 10;
         d = 10;
@@ -114,8 +199,6 @@ form_cells.addEventListener("click", function createField() {
         mine_count_panel.value = 10;
     }
     })
-
-
 
 /*-------------------------------------TIME------------------------------------------ */
 let interval;
@@ -175,12 +258,19 @@ new_game.addEventListener('click', () => {
     field.style.pointerEvents='auto';
     movies.innerText = '0';
 })
+/*
+document.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    console.log(e.target);
+  })
+*/
 
 /*-----------------------------------START GAME---------------------------------------- */
 
 //загрузить бомбы при смене value
 function changeBombCount() {
     body.addEventListener('click', function() {
+
        
         if (field.classList.contains('active') && mine_count_panel.value !== 10) {
             console.log(z);
@@ -210,18 +300,23 @@ function startGame(w, h, bombs_count) {
     let closed_count = cells_count;
     let click_count = 0;
     let mine_count = bombs_count;
-
-
+    let count_flag = bombs_count;
     
     function showBombsCount() {
-        mine_count_panel.value= mine_count;
+        mine_count_panel.value = mine_count;
+        flag_count.value = count_flag;
     }
 
     //массив с индексами бомб
     const bombs = [...Array(cells_count).keys()].sort(() => Math.random() - 0.5).slice(0, bombs_count);
    console.log(bombs);
 
+
+
+
     field.addEventListener('click', (e) => {
+        
+
         field.classList.remove('active');
         createTime();
         click_count++;
@@ -230,6 +325,7 @@ function startGame(w, h, bombs_count) {
         if (e.target.tagName !== 'BUTTON') {
             return;
         }
+
         
         const index = cells.indexOf(e.target);
         const column = index % w;
@@ -237,6 +333,9 @@ function startGame(w, h, bombs_count) {
 
         openCells(row, column)
     });
+
+
+
 
     function getBombsCount(row, column) {
         //проверяю все соседние ячейки на наличие бомб
@@ -261,12 +360,31 @@ function startGame(w, h, bombs_count) {
   
         const index = row * w + column;
         const cell = cells[index];
+
+        if (cell.className.includes('active')) {
+            cell.classList.remove('active');
+            flag_img.classList.remove('put');
+            count_flag++;
+            flag_count.innerText = count_flag;
+            return
+        }
        
         if (cell.disabled === true) return;
         cell.disabled = true;
 
-    
         const count = getBombsCount(row, column);
+        if (flag_img.className.includes('put')) {
+            count_flag--;
+            flag_count.innerText = count_flag;
+            cell.classList.add('active');
+            cell.disabled = false;
+            return;
+        }
+        if (cell.className.includes('active')) {
+            cell.classList.remove('active');
+
+        }
+
         if (isBomb(row, column)) {
             
             cell.innerHTML = '<img class="img_bomb" src ="assets/bomb.png" alt = "mine"></img>';
@@ -294,6 +412,11 @@ function startGame(w, h, bombs_count) {
             return;
         } else {     
             // если каунт 0 то открываю все соседние пустые ячейки
+            for (let el of cells){
+                el.classList.remove('active');
+                count_flag = bombs_count;
+                flag_count.innerText = bombs_count;
+            }
             for (let i=-1; i<=1; i++) {
                 for (let j=-1; j<=1; j++) {
                     openCells(row + j, column + i); 
@@ -312,3 +435,20 @@ function startGame(w, h, bombs_count) {
     }
     
 }
+
+flag_img.addEventListener('click', function(e) {
+    flag_img.classList.toggle('put');
+})
+
+/*
+
+field.oncontextmenu = () => false; //не вызывать контекстное меню
+const cells = [...field.children];
+document.addEventListener("contextmenu", (e) => {
+
+    for (let cell of cells) {
+        e.preventDefault();
+        console.log(cell);
+        break
+    }
+  });*/
