@@ -1,5 +1,3 @@
-
-
 const body = document.body;
 const button = document.querySelector('.button');
 
@@ -133,6 +131,11 @@ const toggle = document.createElement('div');
 toggle.classList.add('toggle_circle');
 night_button.appendChild(toggle);
 
+const sound_mode = document.createElement('div');
+sound_mode.classList.add('sound_mode');
+sound_mode.classList.add('on');
+panel5.appendChild(sound_mode);
+
 const flag = document.createElement('div');
 flag.classList.add('flag');
 panel5.appendChild(flag);
@@ -178,6 +181,8 @@ form_cells.addEventListener("click", function createField() {
       field.classList.remove('tw_five');
       field.classList.add('fifteen');
       mine_count_panel.value = 40;
+      flag_count.innerText = 40;
+      movies.innerText = 0;
     }
 
     if (field_cells === 'hard') {
@@ -188,6 +193,8 @@ form_cells.addEventListener("click", function createField() {
         field.classList.remove('fifteen');
         field.classList.add('tw_five');
         mine_count_panel.value = 99;
+        flag_count.innerText = 99;
+        movies.innerText = 0;
     }
     if (field_cells === 'easy') {
         resetTime();
@@ -197,6 +204,8 @@ form_cells.addEventListener("click", function createField() {
         field.classList.remove('fifteen');
         field.classList.remove('tw_five');
         mine_count_panel.value = 10;
+        flag_count.innerText = 10;
+        movies.innerText = 0;
     }
     })
 
@@ -257,13 +266,10 @@ new_game.addEventListener('click', () => {
     startGame(d, d, changeBombCount());
     field.style.pointerEvents='auto';
     movies.innerText = '0';
+    flag_count.innerText = mine_count_panel.value;
+    flag_img.classList.remove('put');
 })
-/*
-document.addEventListener("contextmenu", (e) => {
-    e.preventDefault();
-    console.log(e.target);
-  })
-*/
+
 
 /*-----------------------------------START GAME---------------------------------------- */
 
@@ -271,16 +277,18 @@ document.addEventListener("contextmenu", (e) => {
 function changeBombCount() {
     body.addEventListener('click', function() {
 
-       
         if (field.classList.contains('active') && mine_count_panel.value !== 10) {
             console.log(z);
+            flag_count.innerText = mine_count_panel.value;
             startGame(d, d, mine_count_panel.value);
         }
         if (mine_count_panel.value > 99) {
             mine_count_panel.value = 99;
+            flag_count.innerText = 99;
         }
         if (mine_count_panel.value < 10) {
             mine_count_panel.value = 10;
+            flag_count.innerText = 10;
         }
     })
     return mine_count_panel.value;
@@ -304,6 +312,7 @@ function startGame(w, h, bombs_count) {
     
     function showBombsCount() {
         mine_count_panel.value = mine_count;
+        flag_count.innerText = mine_count;
         flag_count.value = count_flag;
     }
 
@@ -362,6 +371,9 @@ function startGame(w, h, bombs_count) {
         const cell = cells[index];
 
         if (cell.className.includes('active')) {
+            if (sound_mode.className.includes('on')) { 
+            sound('flag');
+            }
             cell.classList.remove('active');
             flag_img.classList.remove('put');
             count_flag++;
@@ -376,23 +388,26 @@ function startGame(w, h, bombs_count) {
         if (flag_img.className.includes('put')) {
             count_flag--;
             flag_count.innerText = count_flag;
+            if (sound_mode.className.includes('on')) { 
+                sound('flag');
+            }
             cell.classList.add('active');
             cell.disabled = false;
             return;
         }
         if (cell.className.includes('active')) {
             cell.classList.remove('active');
-
         }
 
         if (isBomb(row, column)) {
-            
             cell.innerHTML = '<img class="img_bomb" src ="assets/bomb.png" alt = "mine"></img>';
-            alert('Game over. Try again');
+            if (sound_mode.className.includes('on')) { 
+                sound('lose');
+            }
             showBombsCount();
             stopTime();
             field.style.pointerEvents='none';
-           // field.classList.add('active');
+            alert('Game over. Try again');
             return;
         } 
 
@@ -401,6 +416,9 @@ function startGame(w, h, bombs_count) {
             let z = Math.floor(s*0.01);
             console.log(z);
             stopTime();
+            if (sound_mode.className.includes('on')) { 
+                sound('win');
+            }
             alert(`Hooray! You found all mines in ${z} seconds and ${click_count} moves!`);
             field.classList.add('active');
             field.style.pointerEvents='none';
@@ -408,9 +426,12 @@ function startGame(w, h, bombs_count) {
         }
 
         if (count !== 0) {
+            if (sound_mode.className.includes('on')) { 
+                sound('click');
+            }
             cell.innerHTML = `<img class="img_num" src ="assets/${count}.png" alt = "mine"></img>`;
             return;
-        } else {     
+        } else {  
             // если каунт 0 то открываю все соседние пустые ячейки
             for (let el of cells){
                 el.classList.remove('active');
@@ -432,23 +453,22 @@ function startGame(w, h, bombs_count) {
         //вычисляю индекс по ряду колонки
         const index = row * w +  column;
         return bombs.includes(index);
-    }
-    
+    } 
 }
 
 flag_img.addEventListener('click', function(e) {
+    if (sound_mode.className.includes('on')) { 
+        sound('flag');
+    }
     flag_img.classList.toggle('put');
 })
 
-/*
+sound_mode.addEventListener('click', function() {
+    sound_mode.classList.toggle('on');
+})
 
-field.oncontextmenu = () => false; //не вызывать контекстное меню
-const cells = [...field.children];
-document.addEventListener("contextmenu", (e) => {
-
-    for (let cell of cells) {
-        e.preventDefault();
-        console.log(cell);
-        break
-    }
-  });*/
+function sound(e) {
+    let audio = new Audio();
+    audio.autoplay = true;
+    audio.src = `assets/${e}.mp3`;
+}
