@@ -1,7 +1,6 @@
 const body = document.body;
 const button = document.querySelector('.button');
 
-
 const container = document.createElement('div');
 container.classList.add('container');
 body.appendChild(container);
@@ -196,6 +195,7 @@ form_cells.addEventListener("click", function createField() {
         flag_count.innerText = 99;
         movies.innerText = 0;
     }
+
     if (field_cells === 'easy') {
         resetTime();
         startGame(10, 10, 10);
@@ -312,7 +312,7 @@ function startGame(w, h, bombs_count) {
     
     function showBombsCount() {
         mine_count_panel.value = mine_count;
-        flag_count.innerText = mine_count;
+      //  flag_count.innerText = mine_count;
         flag_count.value = count_flag;
     }
 
@@ -320,12 +320,8 @@ function startGame(w, h, bombs_count) {
     const bombs = [...Array(cells_count).keys()].sort(() => Math.random() - 0.5).slice(0, bombs_count);
    console.log(bombs);
 
-
-
-
     field.addEventListener('click', (e) => {
         
-
         field.classList.remove('active');
         createTime();
         click_count++;
@@ -335,16 +331,12 @@ function startGame(w, h, bombs_count) {
             return;
         }
 
-        
         const index = cells.indexOf(e.target);
         const column = index % w;
         const row = Math.floor(index / w);
 
         openCells(row, column)
     });
-
-
-
 
     function getBombsCount(row, column) {
         //проверяю все соседние ячейки на наличие бомб
@@ -370,6 +362,7 @@ function startGame(w, h, bombs_count) {
         const index = row * w + column;
         const cell = cells[index];
 
+        //если клик по флагу то +
         if (cell.className.includes('active')) {
             if (sound_mode.className.includes('on')) { 
             sound('flag');
@@ -433,10 +426,13 @@ function startGame(w, h, bombs_count) {
             return;
         } else {  
             // если каунт 0 то открываю все соседние пустые ячейки
-            for (let el of cells){
-                el.classList.remove('active');
-                count_flag = bombs_count;
-                flag_count.innerText = bombs_count;
+           for (let el of cells) {
+            if (el.className.includes('active')) {
+                continue
+            }
+               // el.classList.remove('active');
+                //count_flag = bombs_count;
+                //flag_count.innerText = bombs_count;
             }
             for (let i=-1; i<=1; i++) {
                 for (let j=-1; j<=1; j++) {

@@ -28,7 +28,7 @@ body {
 .panel {
     margin-top: 10px;
     height: 50px;
-    min-width: 60%;
+    min-width: 80%;
     display: flex;
     align-items: center;
     justify-content:space-around;
@@ -222,6 +222,9 @@ form {
 .on {
     background-image: url(assets/onn.png);
 }
+
+
+
 
 
 
